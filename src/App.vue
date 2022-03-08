@@ -26,7 +26,22 @@ export default defineComponent({
 	components: { SimpleKeyboard, WordRow},
 	setup() {
 		const handleInput = (key: string) => {
-			console.log('key', key);
+			if (state.currentGuessIndex >= 6) {
+				return ;
+			}
+			const currentGuess = state.guesses[state.currentGuessIndex];
+			if (key == "{enter}") {
+				if (currentGuess.length === 5) {
+					state.currentGuessIndex++;
+				}
+			} else if (key == "{bksp}") {
+				state.guesses[state.currentGuessIndex] = currentGuess.slice(0, -1);
+			} else if (currentGuess.length < 5) {
+				const alphaRex = /[a-zA-Z]/;
+				if (alphaRex.test(key)) {
+					state.guesses[state.currentGuessIndex] += key;
+				}
+			}
 		}
 
 		const state: Wordle = reactive({
