@@ -9,10 +9,13 @@
 				:key="i"
 				:value="guess"
 				:solution="state.solution"
-				:submitted="i < currentGuessIndex"
+				:submitted="i < state.currentGuessIndex"
 			/>
 		</div>
-		<simple-keyboard @onKeyPress="handleInput"/>
+		<simple-keyboard 
+			@onKeyPress="handleInput"
+			:guessedLetters="state.guessedLetters"
+		/>
 	</div>
 </template>
 
@@ -34,6 +37,16 @@ export default defineComponent({
 				if (currentGuess.length === 5) {
 					state.currentGuessIndex++;
 				}
+				for (let i = 0; i < currentGuess.length; i++) {
+					const c = currentGuess.charAt(i);
+					if (c == state.solution.charAt(i)) {
+						state.guessedLetters.found.push(c);
+					} else if (state.solution.includes(c)) {
+						state.guessedLetters.hint.push(c);
+					} else {
+						state.guessedLetters.miss.push(c);
+					}
+				}
 			} else if (key == "{bksp}") {
 				state.guesses[state.currentGuessIndex] = currentGuess.slice(0, -1);
 			} else if (currentGuess.length < 5) {
@@ -48,6 +61,11 @@ export default defineComponent({
 			solution: "books",
 			guesses: ["", "", "", "", "", ""],
 			currentGuessIndex: 0,
+			guessedLetters: {
+				miss: [],
+				found: [],
+				hint: [],
+			}
 		});
 
 		onMounted(() => {
