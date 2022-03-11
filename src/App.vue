@@ -1,9 +1,6 @@
 <template>
 	<div class="flex flex-col h-screen max-w-md mx-auto justify-evenly">
 		<div>
-			<!-- <word-row 
-				v-for="(guess, i) in state.guesses"
-			/> -->
 			<word-row
 				v-for="(guess, i) in state.guesses"
 				:key="i"
@@ -35,6 +32,17 @@ import { Wordle } from './types/WordleTypes';
 export default defineComponent({
 	components: { SimpleKeyboard, WordRow},
 	setup() {
+		const state: Wordle = reactive({
+			solution: "books",
+			guesses: ["", "", "", "", "", ""],
+			currentGuessIndex: 0,
+			guessedLetters: {
+				miss: [],
+				found: [],
+				hint: [],
+			}
+		});
+
 		const handleInput = (key: string) => {
 			if (state.currentGuessIndex >= 6 || wonGame.value) {
 				return ;
@@ -70,17 +78,6 @@ export default defineComponent({
 		});
 
 		const lostGame = computed(() => !wonGame.value && state.currentGuessIndex >= 6);
-
-		const state: Wordle = reactive({
-			solution: "books",
-			guesses: ["", "", "", "", "", ""],
-			currentGuessIndex: 0,
-			guessedLetters: {
-				miss: [],
-				found: [],
-				hint: [],
-			}
-		});
 
 		onMounted(() => {
 			window.addEventListener("keyup", (e) => {
