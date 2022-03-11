@@ -12,6 +12,13 @@
 				:submitted="i < state.currentGuessIndex"
 			/>
 		</div>
+		<p v-if="wonGame" class="text-center">
+			Congrats you solved it
+		</p>
+
+		<p v-else-if="lostGame" class="text-center">
+			Out of tries :(
+		</p>
 		<simple-keyboard 
 			@onKeyPress="handleInput"
 			:guessedLetters="state.guessedLetters"
@@ -20,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive } from 'vue';
+import { defineComponent, onMounted, reactive, computed } from 'vue';
 import SimpleKeyboard from './components/SimpleKeyboard.vue';
 import WordRow from './components/WordRow.vue';
 import { Wordle } from './types/WordleTypes';
@@ -29,7 +36,7 @@ export default defineComponent({
 	components: { SimpleKeyboard, WordRow},
 	setup() {
 		const handleInput = (key: string) => {
-			if (state.currentGuessIndex >= 6) {
+			if (state.currentGuessIndex >= 6 || wonGame.value) {
 				return ;
 			}
 			const currentGuess = state.guesses[state.currentGuessIndex];
@@ -57,6 +64,13 @@ export default defineComponent({
 			}
 		}
 
+		const wonGame = computed(() => {
+			if (state.guesses[state.currentGuessIndex - 1] === state.solution) return true;
+			return false;
+		});
+
+		const lostGame = computed(() => !wonGame.value && state.currentGuessIndex >= 6);
+
 		const state: Wordle = reactive({
 			solution: "books",
 			guesses: ["", "", "", "", "", ""],
@@ -83,6 +97,8 @@ export default defineComponent({
 		return {
 			handleInput,
 			state,
+			wonGame,
+			lostGame
 		}
 	},
 })
